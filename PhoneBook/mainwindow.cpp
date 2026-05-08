@@ -7,6 +7,41 @@
 #include <QRegularExpression>
 #include <QRegularExpressionValidator>
 
+namespace {
+QString normalizeNameInput(const QString &input) {
+    QString result;
+    int lettersCount = 0;
+
+    for (const QChar &ch : input) {
+        if (ch == QLatin1Char(' ')) {
+            result.append(ch);
+            continue;
+        }
+
+        if (!ch.isLetter() || lettersCount >= 10) {
+            continue;
+        }
+
+        result.append(ch);
+        lettersCount++;
+    }
+
+    return result;
+}
+
+int countLetters(const QString &input) {
+    int lettersCount = 0;
+
+    for (const QChar &ch : input) {
+        if (ch.isLetter()) {
+            lettersCount++;
+        }
+    }
+
+    return lettersCount;
+}
+}
+
 // Конструктор окна
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
@@ -19,6 +54,17 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     nameEdit = new QLineEdit();
     nameEdit->setPlaceholderText("Имя");
 
+    connect(nameEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
+        QString normalized = normalizeNameInput(text);
+        if (normalized == text) {
+            return;
+        }
+
+        int cursorPosition = nameEdit->cursorPosition();
+        nameEdit->setText(normalized);
+        nameEdit->setCursorPosition(qMin(cursorPosition, normalized.length()));
+    });
+
     phoneEdit = new QLineEdit();
     phoneEdit->setMaxLength(11);
     phoneEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d{0,11}"), phoneEdit));
@@ -30,8 +76,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // Таблица
     table = new QTableWidget();
-    table->setColumnCount(3);
-    table->setHorizontalHeaderLabels({"ID", "Имя", "Телефон"});
+    table->setColumnCount(2);
+    table->setHorizontalHeaderLabels({"Имя", "Телефон"});
     table->horizontalHeader()->setStretchLastSection(true);
 
     // Layout для ввода
@@ -63,9 +109,11 @@ void MainWindow::loadData() {
     while (query.next()) {
         table->insertRow(row);
 
-        table->setItem(row, 0, new QTableWidgetItem(query.value(0).toString()));
-        table->setItem(row, 1, new QTableWidgetItem(query.value(1).toString()));
-        table->setItem(row, 2, new QTableWidgetItem(query.value(2).toString()));
+        QTableWidgetItem *nameItem = new QTableWidgetItem(query.value(1).toString());
+        nameItem->setData(Qt::UserRole, query.value(0));
+
+        table->setItem(row, 0, nameItem);
+        table->setItem(row, 1, new QTableWidgetItem(query.value(2).toString()));
 
         row++;
     }
@@ -73,10 +121,15 @@ void MainWindow::loadData() {
 
 // Добавление
 void MainWindow::addContact() {
-    QString name = nameEdit->text();
+    QString name = nameEdit->text().trimmed();
     QString phone = phoneEdit->text();
 
     if (name.isEmpty() || phone.isEmpty()) return;
+
+    if (normalizeNameInput(name) != name || countLetters(name) > 10 || countLetters(name) == 0) {
+        QMessageBox::warning(this, "Ошибка", "Имя должно состоять только из букв и содержать не более 10 букв");
+        return;
+    }
 
     if (!QRegularExpression("^\\d{11}$").match(phone).hasMatch()) {
         QMessageBox::warning(this, "Ошибка", "Телефон должен содержать ровно 11 цифр");
@@ -100,7 +153,7 @@ void MainWindow::deleteContact() {
     int row = table->currentRow();
     if (row < 0) return;
 
-    int id = table->item(row, 0)->text().toInt();
+    int id = table->item(row, 0)->data(Qt::UserRole).toInt();
 
     QSqlQuery query;
     query.prepare("DELETE FROM contacts WHERE id = :id");
