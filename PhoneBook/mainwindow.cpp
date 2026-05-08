@@ -167,6 +167,10 @@ bool isValidNameInput(const QString &input, int maxLetters) {
         && countLetters(input) <= maxLetters;
 }
 
+bool isValidOptionalNameInput(const QString &input, int maxLetters) {
+    return input.isEmpty() || isValidNameInput(input, maxLetters);
+}
+
 int widthForLetters(QTableWidget *table, int lettersCount) {
     return table->fontMetrics().horizontalAdvance(QString(lettersCount, QLatin1Char('W'))) + 40;
 }
@@ -174,6 +178,8 @@ int widthForLetters(QTableWidget *table, int lettersCount) {
 
 // Конструктор окна
 MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
+    resize(900, 520);
+    setMinimumWidth(820);
 
     QWidget *central = new QWidget();
     setCentralWidget(central);
@@ -197,6 +203,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     phoneEdit->setMaxLength(18);
     phoneEdit->setPlaceholderText("+7 (999) 999-99-99");
     connectPhoneFormatter(phoneEdit);
+
+    searchEdit = new QLineEdit();
+    searchEdit->setPlaceholderText("Поиск по любому полю");
 
     // Кнопки
     addButton = new QPushButton("Добавить");
@@ -224,6 +233,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     table->setColumnWidth(1, widthForLetters(table, 10));
     table->setColumnWidth(2, widthForLetters(table, 15));
     table->setColumnWidth(3, widthForLetters(table, 15));
+    table->setColumnWidth(4, 170);
 
     // Layout для ввода
     QHBoxLayout *inputLayout = new QHBoxLayout();
@@ -236,6 +246,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     inputLayout->addWidget(clearButton);
 
     mainLayout->addLayout(inputLayout);
+    mainLayout->addWidget(searchEdit);
     mainLayout->addWidget(table);
 
     central->setLayout(mainLayout);
@@ -244,6 +255,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connect(addButton, &QPushButton::clicked, this, &MainWindow::addContact);
     connect(deleteButton, &QPushButton::clicked, this, &MainWindow::deleteContact);
     connect(clearButton, &QPushButton::clicked, this, &MainWindow::clearContacts);
+    connect(searchEdit, &QLineEdit::textChanged, this, &MainWindow::loadData);
 
     loadData();
 }
@@ -252,7 +264,26 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 void MainWindow::loadData() {
     table->setRowCount(0);
 
-    QSqlQuery query("SELECT id, name, first_name, patronymic, phone FROM contacts");
+    QSqlQuery query;
+    const QString searchText = searchEdit->text().trimmed();
+
+    if (searchText.isEmpty()) {
+        query.prepare("SELECT id, name, first_name, patronymic, phone FROM contacts");
+    } else {
+        query.prepare(
+            "SELECT id, name, first_name, patronymic, phone FROM contacts "
+            "WHERE name LIKE :search "
+            "OR first_name LIKE :search "
+            "OR patronymic LIKE :search "
+            "OR phone LIKE :search "
+            "OR (:digits != '' AND replace(replace(replace(replace(replace(phone, '+', ''), ' ', ''), '(', ''), ')', ''), '-', '') LIKE :digits)"
+        );
+        const QString digits = phoneDigits(searchText);
+        query.bindValue(":search", "%" + searchText + "%");
+        query.bindValue(":digits", digits.isEmpty() ? QString() : "%" + digits + "%");
+    }
+
+    query.exec();
 
     int row = 0;
     while (query.next()) {
@@ -277,6 +308,7 @@ void MainWindow::loadData() {
     table->setColumnWidth(1, widthForLetters(table, 10));
     table->setColumnWidth(2, widthForLetters(table, 15));
     table->setColumnWidth(3, widthForLetters(table, 15));
+    table->setColumnWidth(4, 170);
 }
 
 // Добавление
@@ -286,9 +318,12 @@ void MainWindow::addContact() {
     QString patronymic = patronymicEdit->text().trimmed();
     QString phone = phoneEdit->text();
 
-    if (name.isEmpty() || firstName.isEmpty() || patronymic.isEmpty() || phone.isEmpty()) return;
+    if (firstName.isEmpty() || phone.isEmpty()) {
+        QMessageBox::warning(this, "Ошибка", "Поля имя и телефон обязательны для заполнения");
+        return;
+    }
 
-    if (!isValidNameInput(name, 10)) {
+    if (!isValidOptionalNameInput(name, 10)) {
         QMessageBox::warning(this, "Ошибка", "Фамилия должна состоять только из букв и содержать не более 10 букв");
         return;
     }
@@ -298,7 +333,7 @@ void MainWindow::addContact() {
         return;
     }
 
-    if (!isValidNameInput(patronymic, 15)) {
+    if (!isValidOptionalNameInput(patronymic, 15)) {
         QMessageBox::warning(this, "Ошибка", "Отчество должно состоять только из букв и содержать не более 15 букв");
         return;
     }

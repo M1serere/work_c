@@ -18,6 +18,7 @@ private:
     QLineEdit *firstNameEdit;
     QLineEdit *patronymicEdit;
     QLineEdit *phoneEdit;
+    QLineEdit *searchEdit;
     QPushButton *addButton;
     QPushButton *deleteButton;
     QPushButton *clearButton;
