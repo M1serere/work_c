@@ -4,8 +4,7 @@
 #include <QSqlQuery>
 #include <QHeaderView>
 #include <QMessageBox>
-#include <QRegularExpression>
-#include <QRegularExpressionValidator>
+#include <QSignalBlocker>
 
 namespace {
 QString normalizeNameInput(const QString &input, int maxLetters) {
@@ -54,10 +53,122 @@ void connectNameLimiter(QLineEdit *edit, int maxLetters) {
     });
 }
 
+QString phoneDigits(const QString &input) {
+    QString digits;
+
+    for (const QChar &ch : input) {
+        if (!ch.isDigit()) {
+            continue;
+        }
+
+        digits.append(ch);
+    }
+
+    if (input.startsWith("+7")) {
+        digits.remove(0, 1);
+    } else if (digits.length() > 10 && (digits[0] == QLatin1Char('7') || digits[0] == QLatin1Char('8'))) {
+        digits.remove(0, 1);
+    }
+
+    return digits.left(10);
+}
+
+QString formatPhoneNumber(const QString &digits) {
+    if (digits.isEmpty()) {
+        return "";
+    }
+
+    QString result = "+7";
+
+    if (digits.length() >= 1) {
+        result += " (" + digits.left(qMin(3, digits.length()));
+    }
+
+    if (digits.length() >= 3) {
+        result += ")";
+    }
+
+    if (digits.length() >= 4) {
+        result += " " + digits.mid(3, qMin(3, digits.length() - 3));
+    }
+
+    if (digits.length() >= 7) {
+        result += "-" + digits.mid(6, qMin(2, digits.length() - 6));
+    }
+
+    if (digits.length() >= 9) {
+        result += "-" + digits.mid(8, qMin(2, digits.length() - 8));
+    }
+
+    return result;
+}
+
+int digitsBeforePosition(const QString &text, int position) {
+    int count = 0;
+
+    for (int i = 0; i < position && i < text.length(); ++i) {
+        if (text[i].isDigit()) {
+            count++;
+        }
+    }
+
+    if (text.startsWith("+7") && position >= 2 && count > 0) {
+        count--;
+    }
+
+    return count;
+}
+
+int positionAfterDigits(const QString &text, int digitsCount) {
+    if (digitsCount <= 0) {
+        return 0;
+    }
+
+    int seenDigits = 0;
+    bool skippedCountryCode = false;
+
+    for (int i = 0; i < text.length(); ++i) {
+        if (text[i].isDigit()) {
+            if (text.startsWith("+7") && !skippedCountryCode) {
+                skippedCountryCode = true;
+                continue;
+            }
+
+            seenDigits++;
+        }
+
+        if (seenDigits == digitsCount) {
+            return i + 1;
+        }
+    }
+
+    return text.length();
+}
+
+void connectPhoneFormatter(QLineEdit *edit) {
+    QObject::connect(edit, &QLineEdit::textChanged, edit, [edit](const QString &text) {
+        int cursorPosition = edit->cursorPosition();
+        int digitsBeforeCursor = digitsBeforePosition(text, cursorPosition);
+        QString formatted = formatPhoneNumber(phoneDigits(text));
+
+        if (formatted == text) {
+            return;
+        }
+
+        QSignalBlocker blocker(edit);
+        edit->setText(formatted);
+        edit->setCursorPosition(positionAfterDigits(formatted, digitsBeforeCursor));
+    });
+}
+
 bool isValidNameInput(const QString &input, int maxLetters) {
     return normalizeNameInput(input, maxLetters) == input
         && countLetters(input) > 0
         && countLetters(input) <= maxLetters;
+}
+
+int widthForLetters(QTableWidget *table, int lettersCount) {
+    return table->fontMetrics().horizontalAdvance(QString(lettersCount, QLatin1Char('W'))) + 40;
 }
 }
 
@@ -83,9 +194,9 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     connectNameLimiter(patronymicEdit, 15);
 
     phoneEdit = new QLineEdit();
-    phoneEdit->setMaxLength(11);
-    phoneEdit->setValidator(new QRegularExpressionValidator(QRegularExpression("\\d{0,11}"), phoneEdit));
-    phoneEdit->setPlaceholderText("Телефон");
+    phoneEdit->setMaxLength(18);
+    phoneEdit->setPlaceholderText("+7 (999) 999-99-99");
+    connectPhoneFormatter(phoneEdit);
 
     // Кнопки
     addButton = new QPushButton("Добавить");
@@ -94,9 +205,25 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // Таблица
     table = new QTableWidget();
-    table->setColumnCount(4);
-    table->setHorizontalHeaderLabels({"Фамилия", "Имя", "Отчество", "Телефон"});
+    table->setColumnCount(5);
+    table->setHorizontalHeaderLabels({"", "Фамилия", "Имя", "Отчество", "Телефон"});
+    table->setSelectionBehavior(QAbstractItemView::SelectRows);
+    table->setSelectionMode(QAbstractItemView::ExtendedSelection);
+    table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+    table->verticalHeader()->setVisible(false);
+    table->setStyleSheet(
+        "QTableWidget::item:selected {"
+        "background-color: #2f80ed;"
+        "color: white;"
+        "}"
+    );
+    table->horizontalHeader()->setSectionResizeMode(QHeaderView::Interactive);
     table->horizontalHeader()->setStretchLastSection(true);
+    table->setTextElideMode(Qt::ElideNone);
+    table->setColumnWidth(0, 42);
+    table->setColumnWidth(1, widthForLetters(table, 10));
+    table->setColumnWidth(2, widthForLetters(table, 15));
+    table->setColumnWidth(3, widthForLetters(table, 15));
 
     // Layout для ввода
     QHBoxLayout *inputLayout = new QHBoxLayout();
@@ -131,16 +258,25 @@ void MainWindow::loadData() {
     while (query.next()) {
         table->insertRow(row);
 
-        QTableWidgetItem *nameItem = new QTableWidgetItem(query.value(1).toString());
-        nameItem->setData(Qt::UserRole, query.value(0));
+        QTableWidgetItem *checkItem = new QTableWidgetItem();
+        checkItem->setData(Qt::UserRole, query.value(0));
+        checkItem->setCheckState(Qt::Unchecked);
+        checkItem->setTextAlignment(Qt::AlignCenter);
+        checkItem->setFlags(Qt::ItemIsEnabled | Qt::ItemIsUserCheckable | Qt::ItemIsSelectable);
 
-        table->setItem(row, 0, nameItem);
-        table->setItem(row, 1, new QTableWidgetItem(query.value(2).toString()));
-        table->setItem(row, 2, new QTableWidgetItem(query.value(3).toString()));
-        table->setItem(row, 3, new QTableWidgetItem(query.value(4).toString()));
+        table->setItem(row, 0, checkItem);
+        table->setItem(row, 1, new QTableWidgetItem(query.value(1).toString()));
+        table->setItem(row, 2, new QTableWidgetItem(query.value(2).toString()));
+        table->setItem(row, 3, new QTableWidgetItem(query.value(3).toString()));
+        table->setItem(row, 4, new QTableWidgetItem(formatPhoneNumber(phoneDigits(query.value(4).toString()))));
 
         row++;
     }
+
+    table->setColumnWidth(0, 42);
+    table->setColumnWidth(1, widthForLetters(table, 10));
+    table->setColumnWidth(2, widthForLetters(table, 15));
+    table->setColumnWidth(3, widthForLetters(table, 15));
 }
 
 // Добавление
@@ -167,10 +303,12 @@ void MainWindow::addContact() {
         return;
     }
 
-    if (!QRegularExpression("^\\d{11}$").match(phone).hasMatch()) {
-        QMessageBox::warning(this, "Ошибка", "Телефон должен содержать ровно 11 цифр");
+    if (phoneDigits(phone).length() != 10) {
+        QMessageBox::warning(this, "Ошибка", "Телефон должен быть в формате +7 (999) 999-99-99");
         return;
     }
+
+    phone = formatPhoneNumber(phoneDigits(phone));
 
     QSqlQuery query;
     query.prepare("INSERT INTO contacts (name, first_name, patronymic, phone) "
@@ -191,15 +329,24 @@ void MainWindow::addContact() {
 
 // Удаление
 void MainWindow::deleteContact() {
-    int row = table->currentRow();
-    if (row < 0) return;
+    QList<int> checkedIds;
 
-    int id = table->item(row, 0)->data(Qt::UserRole).toInt();
+    for (int row = 0; row < table->rowCount(); ++row) {
+        QTableWidgetItem *item = table->item(row, 0);
+        if (item && item->checkState() == Qt::Checked) {
+            checkedIds.append(item->data(Qt::UserRole).toInt());
+        }
+    }
+
+    if (checkedIds.isEmpty()) return;
 
     QSqlQuery query;
     query.prepare("DELETE FROM contacts WHERE id = :id");
-    query.bindValue(":id", id);
-    query.exec();
+
+    for (int id : checkedIds) {
+        query.bindValue(":id", id);
+        query.exec();
+    }
 
     loadData();
 }
