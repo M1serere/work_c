@@ -1,10 +1,10 @@
 # ninja log v7
-24	529	7999375556484250	PhoneBook_autogen/timestamp	53292334359ee558
-24	529	7999375556484250	PhoneBook_autogen/mocs_compilation.cpp	53292334359ee558
-24	529	7999375556484250	C:/Users/croco/Desktop/nom2/PhoneBook/build/PhoneBook_autogen/timestamp	53292334359ee558
-24	529	7999375556484250	C:/Users/croco/Desktop/nom2/PhoneBook/build/PhoneBook_autogen/mocs_compilation.cpp	53292334359ee558
-545	1637	7999375557168401	CMakeFiles/PhoneBook.dir/database.cpp.obj	ec72235e5d7a0791
-537	2007	7999375557098412	CMakeFiles/PhoneBook.dir/main.cpp.obj	6e1fd56ee0c4c08
-533	2050	7999375557058399	CMakeFiles/PhoneBook.dir/PhoneBook_autogen/mocs_compilation.cpp.obj	5a5c394cd2497f38
-541	2326	7999375557128463	CMakeFiles/PhoneBook.dir/mainwindow.cpp.obj	4300e33e928a123c
-2326	2450	7999375574975088	PhoneBook.exe	11333d19b25b2762
+38	19050	7999485940303876	PhoneBook_autogen/timestamp	53292334359ee558
+38	19050	7999485940303876	PhoneBook_autogen/mocs_compilation.cpp	53292334359ee558
+38	19050	7999485940303876	C:/Users/croco/Desktop/nom2/PhoneBook/build/PhoneBook_autogen/timestamp	53292334359ee558
+38	19050	7999485940303876	C:/Users/croco/Desktop/nom2/PhoneBook/build/PhoneBook_autogen/mocs_compilation.cpp	53292334359ee558
+19092	22891	7999485941796709	CMakeFiles/PhoneBook.dir/database.cpp.obj	ec72235e5d7a0791
+19063	24071	7999485941514085	CMakeFiles/PhoneBook.dir/PhoneBook_autogen/mocs_compilation.cpp.obj	5a5c394cd2497f38
+19071	24279	7999485941604876	CMakeFiles/PhoneBook.dir/main.cpp.obj	6e1fd56ee0c4c08
+19082	24905	7999485941700546	CMakeFiles/PhoneBook.dir/mainwindow.cpp.obj	4300e33e928a123c
+24906	25477	7999485999944657	PhoneBook.exe	11333d19b25b2762

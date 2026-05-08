@@ -255,6 +255,7 @@ C:/Users/croco/Desktop/nom2/PhoneBook/mainwindow.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qglobalstatic.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qhash.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qhashfunctions.h
+ mdp:C:/msys64/ucrt64/include/qt6/QtCore/qiodevice.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qiodevicebase.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qitemselectionmodel.h
  mdp:C:/msys64/ucrt64/include/qt6/QtCore/qiterable.h
@@ -351,6 +352,7 @@ C:/Users/croco/Desktop/nom2/PhoneBook/mainwindow.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qpaintdevice.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qpalette.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qpen.h
+ mdp:C:/msys64/ucrt64/include/qt6/QtGui/qpicture.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qpixelformat.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qpixmap.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qpolygon.h
@@ -368,6 +370,7 @@ C:/Users/croco/Desktop/nom2/PhoneBook/mainwindow.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qvalidator.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs.h
  mdp:C:/msys64/ucrt64/include/qt6/QtGui/qwindowdefs_win.h
+ mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QLabel
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QLineEdit
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QMainWindow
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/QPushButton
@@ -379,6 +382,7 @@ C:/Users/croco/Desktop/nom2/PhoneBook/mainwindow.h
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qabstractslider.h
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qabstractspinbox.h
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qframe.h
+ mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qlabel.h
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qlineedit.h
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qmainwindow.h
  mdp:C:/msys64/ucrt64/include/qt6/QtWidgets/qpushbutton.h

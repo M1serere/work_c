@@ -5,6 +5,7 @@
 #include <QTableWidget>
 #include <QLineEdit>
 #include <QPushButton>
+#include <QLabel>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -24,9 +25,12 @@ private:
     QPushButton *deleteButton;
     QPushButton *clearButton;
     QPushButton *deleteAllButton;
+    QLabel *countLabel;
+    QLabel *emptyHintLabel;
 
     void loadData();
     int currentContactId() const;
+    void updateContactSummary();
 
 private slots:
     void addContact();
