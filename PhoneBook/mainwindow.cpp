@@ -174,6 +174,24 @@ bool isValidOptionalNameInput(const QString &input, int maxLetters) {
 int widthForLetters(QTableWidget *table, int lettersCount) {
     return table->fontMetrics().horizontalAdvance(QString(lettersCount, QLatin1Char('W'))) + 40;
 }
+
+bool phoneExists(const QString &normalizedPhone, int excludedId = -1) {
+    QSqlQuery query;
+    query.prepare("SELECT id, phone FROM contacts");
+    query.exec();
+
+    while (query.next()) {
+        if (excludedId != -1 && query.value(0).toInt() == excludedId) {
+            continue;
+        }
+
+        if (phoneDigits(query.value(1).toString()) == normalizedPhone) {
+            return true;
+        }
+    }
+
+    return false;
+}
 }
 
 // Конструктор окна
@@ -209,8 +227,10 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // Кнопки
     addButton = new QPushButton("Добавить");
+    editButton = new QPushButton("Изменить");
     deleteButton = new QPushButton("Удалить");
     clearButton = new QPushButton("Очистить");
+    deleteAllButton = new QPushButton("Удалить всё");
 
     // Таблица
     table = new QTableWidget();
@@ -241,21 +261,29 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     inputLayout->addWidget(firstNameEdit);
     inputLayout->addWidget(patronymicEdit);
     inputLayout->addWidget(phoneEdit);
-    inputLayout->addWidget(addButton);
-    inputLayout->addWidget(deleteButton);
     inputLayout->addWidget(clearButton);
+    inputLayout->addWidget(addButton);
+    inputLayout->addWidget(editButton);
+    inputLayout->addWidget(deleteButton);
+
+    QHBoxLayout *searchLayout = new QHBoxLayout();
+    searchLayout->addWidget(searchEdit, 1);
+    searchLayout->addWidget(deleteAllButton, 1);
 
     mainLayout->addLayout(inputLayout);
-    mainLayout->addWidget(searchEdit);
+    mainLayout->addLayout(searchLayout);
     mainLayout->addWidget(table);
 
     central->setLayout(mainLayout);
 
     // Связь кнопок
     connect(addButton, &QPushButton::clicked, this, &MainWindow::addContact);
+    connect(editButton, &QPushButton::clicked, this, &MainWindow::editContact);
     connect(deleteButton, &QPushButton::clicked, this, &MainWindow::deleteContact);
-    connect(clearButton, &QPushButton::clicked, this, &MainWindow::clearContacts);
+    connect(clearButton, &QPushButton::clicked, this, &MainWindow::clearInputFields);
+    connect(deleteAllButton, &QPushButton::clicked, this, &MainWindow::clearContacts);
     connect(searchEdit, &QLineEdit::textChanged, this, &MainWindow::loadData);
+    connect(table, &QTableWidget::itemSelectionChanged, this, &MainWindow::fillInputsFromCurrentRow);
 
     loadData();
 }
@@ -311,6 +339,24 @@ void MainWindow::loadData() {
     table->setColumnWidth(4, 170);
 }
 
+int MainWindow::currentContactId() const {
+    if (!table->selectionModel() || table->selectionModel()->selectedRows().isEmpty()) {
+        return -1;
+    }
+
+    const int row = table->currentRow();
+    if (row < 0) {
+        return -1;
+    }
+
+    QTableWidgetItem *idItem = table->item(row, 0);
+    if (!idItem) {
+        return -1;
+    }
+
+    return idItem->data(Qt::UserRole).toInt();
+}
+
 // Добавление
 void MainWindow::addContact() {
     QString name = nameEdit->text().trimmed();
@@ -343,7 +389,13 @@ void MainWindow::addContact() {
         return;
     }
 
-    phone = formatPhoneNumber(phoneDigits(phone));
+    const QString normalizedPhone = phoneDigits(phone);
+    if (phoneExists(normalizedPhone)) {
+        QMessageBox::warning(this, "Ошибка", "Запись с таким номером телефона уже существует");
+        return;
+    }
+
+    phone = formatPhoneNumber(normalizedPhone);
 
     QSqlQuery query;
     query.prepare("INSERT INTO contacts (name, first_name, patronymic, phone) "
@@ -360,6 +412,88 @@ void MainWindow::addContact() {
     phoneEdit->clear();
 
     loadData();
+}
+
+void MainWindow::editContact() {
+    const int id = currentContactId();
+    if (id == -1) {
+        QMessageBox::warning(this, "Ошибка", "Выберите запись для изменения");
+        return;
+    }
+
+    QString name = nameEdit->text().trimmed();
+    QString firstName = firstNameEdit->text().trimmed();
+    QString patronymic = patronymicEdit->text().trimmed();
+    QString phone = phoneEdit->text();
+
+    if (firstName.isEmpty() || phone.isEmpty()) {
+        QMessageBox::warning(this, "Ошибка", "Поля имя и телефон обязательны для заполнения");
+        return;
+    }
+
+    if (!isValidOptionalNameInput(name, 10)) {
+        QMessageBox::warning(this, "Ошибка", "Фамилия должна состоять только из букв и содержать не более 10 букв");
+        return;
+    }
+
+    if (!isValidNameInput(firstName, 15)) {
+        QMessageBox::warning(this, "Ошибка", "Имя должно состоять только из букв и содержать не более 15 букв");
+        return;
+    }
+
+    if (!isValidOptionalNameInput(patronymic, 15)) {
+        QMessageBox::warning(this, "Ошибка", "Отчество должно состоять только из букв и содержать не более 15 букв");
+        return;
+    }
+
+    if (phoneDigits(phone).length() != 10) {
+        QMessageBox::warning(this, "Ошибка", "Телефон должен быть в формате +7 (999) 999-99-99");
+        return;
+    }
+
+    const QString normalizedPhone = phoneDigits(phone);
+    if (phoneExists(normalizedPhone, id)) {
+        QMessageBox::warning(this, "Ошибка", "Запись с таким номером телефона уже существует");
+        return;
+    }
+
+    phone = formatPhoneNumber(normalizedPhone);
+
+    QSqlQuery query;
+    query.prepare("UPDATE contacts SET name = :name, first_name = :first_name, "
+                  "patronymic = :patronymic, phone = :phone WHERE id = :id");
+    query.bindValue(":name", name);
+    query.bindValue(":first_name", firstName);
+    query.bindValue(":patronymic", patronymic);
+    query.bindValue(":phone", phone);
+    query.bindValue(":id", id);
+    query.exec();
+
+    loadData();
+}
+
+void MainWindow::fillInputsFromCurrentRow() {
+    if (!table->selectionModel() || table->selectionModel()->selectedRows().isEmpty()) {
+        return;
+    }
+
+    const int row = table->currentRow();
+    if (row < 0) {
+        return;
+    }
+
+    nameEdit->setText(table->item(row, 1) ? table->item(row, 1)->text() : QString());
+    firstNameEdit->setText(table->item(row, 2) ? table->item(row, 2)->text() : QString());
+    patronymicEdit->setText(table->item(row, 3) ? table->item(row, 3)->text() : QString());
+    phoneEdit->setText(table->item(row, 4) ? table->item(row, 4)->text() : QString());
+}
+
+void MainWindow::clearInputFields() {
+    table->clearSelection();
+    nameEdit->clear();
+    firstNameEdit->clear();
+    patronymicEdit->clear();
+    phoneEdit->clear();
 }
 
 // Удаление
@@ -404,5 +538,6 @@ void MainWindow::clearContacts() {
     QSqlQuery query;
     query.exec("DELETE FROM contacts");
 
+    clearInputFields();
     loadData();
 }
