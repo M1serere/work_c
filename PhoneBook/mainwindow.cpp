@@ -90,6 +90,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // Кнопки
     addButton = new QPushButton("Добавить");
     deleteButton = new QPushButton("Удалить");
+    clearButton = new QPushButton("Очистить");
 
     // Таблица
     table = new QTableWidget();
@@ -105,6 +106,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     inputLayout->addWidget(phoneEdit);
     inputLayout->addWidget(addButton);
     inputLayout->addWidget(deleteButton);
+    inputLayout->addWidget(clearButton);
 
     mainLayout->addLayout(inputLayout);
     mainLayout->addWidget(table);
@@ -114,6 +116,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
     // Связь кнопок
     connect(addButton, &QPushButton::clicked, this, &MainWindow::addContact);
     connect(deleteButton, &QPushButton::clicked, this, &MainWindow::deleteContact);
+    connect(clearButton, &QPushButton::clicked, this, &MainWindow::clearContacts);
 
     loadData();
 }
@@ -197,6 +200,27 @@ void MainWindow::deleteContact() {
     query.prepare("DELETE FROM contacts WHERE id = :id");
     query.bindValue(":id", id);
     query.exec();
+
+    loadData();
+}
+
+// Очистка телефонной книги
+void MainWindow::clearContacts() {
+    if (table->rowCount() == 0) return;
+
+    QMessageBox::StandardButton answer = QMessageBox::question(
+        this,
+        "Подтверждение",
+        "Очистить всю телефонную книгу?",
+        QMessageBox::Yes | QMessageBox::No
+    );
+
+    if (answer != QMessageBox::Yes) {
+        return;
+    }
+
+    QSqlQuery query;
+    query.exec("DELETE FROM contacts");
 
     loadData();
 }

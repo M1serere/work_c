@@ -20,12 +20,14 @@ private:
     QLineEdit *phoneEdit;
     QPushButton *addButton;
     QPushButton *deleteButton;
+    QPushButton *clearButton;
 
     void loadData();
 
 private slots:
     void addContact();
     void deleteContact();
+    void clearContacts();
 };
 
 #endif
