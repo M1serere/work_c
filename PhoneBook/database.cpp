@@ -15,5 +15,10 @@ void Database::connect() {
     query.exec("CREATE TABLE IF NOT EXISTS contacts ("
                "id INTEGER PRIMARY KEY AUTOINCREMENT,"
                "name TEXT,"
+               "first_name TEXT,"
+               "patronymic TEXT,"
                "phone TEXT)");
+
+    query.exec("ALTER TABLE contacts ADD COLUMN first_name TEXT");
+    query.exec("ALTER TABLE contacts ADD COLUMN patronymic TEXT");
 }

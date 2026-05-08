@@ -509,11 +509,21 @@ PhoneBook_autogen/timestamp: \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QGifPluginTargets-relwithdebinfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QGifPluginTargets.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QGifPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICNSPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICNSPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICNSPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICNSPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICNSPluginTargetsPrecheck.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICOPluginAdditionalTargetInfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICOPluginConfig.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICOPluginTargets-relwithdebinfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICOPluginTargets.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QICOPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QJp2PluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QJp2PluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QJp2PluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QJp2PluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QJp2PluginTargetsPrecheck.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QJpegPluginAdditionalTargetInfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QJpegPluginConfig.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QJpegPluginTargets-relwithdebinfo.cmake \
@@ -524,16 +534,61 @@ PhoneBook_autogen/timestamp: \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QMinimalIntegrationPluginTargets-relwithdebinfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QMinimalIntegrationPluginTargets.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QMinimalIntegrationPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QMngPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QMngPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QMngPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QMngPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QMngPluginTargetsPrecheck.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QOffscreenIntegrationPluginAdditionalTargetInfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QOffscreenIntegrationPluginConfig.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QOffscreenIntegrationPluginTargets-relwithdebinfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QOffscreenIntegrationPluginTargets.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QOffscreenIntegrationPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QPdfPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QPdfPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QPdfPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QPdfPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QPdfPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgIconPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgIconPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgIconPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgIconPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgIconPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QSvgPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTgaPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTgaPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTgaPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTgaPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTgaPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTiffPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTiffPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTiffPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTiffPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTiffPluginTargetsPrecheck.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTuioTouchPluginAdditionalTargetInfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTuioTouchPluginConfig.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTuioTouchPluginTargets-relwithdebinfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTuioTouchPluginTargets.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QTuioTouchPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QVirtualKeyboardPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QVirtualKeyboardPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QVirtualKeyboardPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QVirtualKeyboardPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QVirtualKeyboardPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWbmpPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWbmpPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWbmpPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWbmpPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWbmpPluginTargetsPrecheck.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWebpPluginAdditionalTargetInfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWebpPluginConfig.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWebpPluginTargets-relwithdebinfo.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWebpPluginTargets.cmake \
+	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWebpPluginTargetsPrecheck.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWindowsDirect2DIntegrationPluginAdditionalTargetInfo.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWindowsDirect2DIntegrationPluginConfig.cmake \
 	C:/msys64/ucrt64/lib/cmake/Qt6Gui/Qt6QWindowsDirect2DIntegrationPluginTargets-relwithdebinfo.cmake \

@@ -15,6 +15,8 @@ public:
 private:
     QTableWidget *table;
     QLineEdit *nameEdit;
+    QLineEdit *firstNameEdit;
+    QLineEdit *patronymicEdit;
     QLineEdit *phoneEdit;
     QPushButton *addButton;
     QPushButton *deleteButton;

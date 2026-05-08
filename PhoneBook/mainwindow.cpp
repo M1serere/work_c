@@ -8,7 +8,7 @@
 #include <QRegularExpressionValidator>
 
 namespace {
-QString normalizeNameInput(const QString &input) {
+QString normalizeNameInput(const QString &input, int maxLetters) {
     QString result;
     int lettersCount = 0;
 
@@ -18,7 +18,7 @@ QString normalizeNameInput(const QString &input) {
             continue;
         }
 
-        if (!ch.isLetter() || lettersCount >= 10) {
+        if (!ch.isLetter() || lettersCount >= maxLetters) {
             continue;
         }
 
@@ -40,6 +40,25 @@ int countLetters(const QString &input) {
 
     return lettersCount;
 }
+
+void connectNameLimiter(QLineEdit *edit, int maxLetters) {
+    QObject::connect(edit, &QLineEdit::textChanged, edit, [edit, maxLetters](const QString &text) {
+        QString normalized = normalizeNameInput(text, maxLetters);
+        if (normalized == text) {
+            return;
+        }
+
+        int cursorPosition = edit->cursorPosition();
+        edit->setText(normalized);
+        edit->setCursorPosition(qMin(cursorPosition, normalized.length()));
+    });
+}
+
+bool isValidNameInput(const QString &input, int maxLetters) {
+    return normalizeNameInput(input, maxLetters) == input
+        && countLetters(input) > 0
+        && countLetters(input) <= maxLetters;
+}
 }
 
 // Конструктор окна
@@ -52,18 +71,16 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // Поля ввода
     nameEdit = new QLineEdit();
-    nameEdit->setPlaceholderText("Имя");
+    nameEdit->setPlaceholderText("Фамилия");
+    connectNameLimiter(nameEdit, 10);
 
-    connect(nameEdit, &QLineEdit::textChanged, this, [this](const QString &text) {
-        QString normalized = normalizeNameInput(text);
-        if (normalized == text) {
-            return;
-        }
+    firstNameEdit = new QLineEdit();
+    firstNameEdit->setPlaceholderText("Имя");
+    connectNameLimiter(firstNameEdit, 15);
 
-        int cursorPosition = nameEdit->cursorPosition();
-        nameEdit->setText(normalized);
-        nameEdit->setCursorPosition(qMin(cursorPosition, normalized.length()));
-    });
+    patronymicEdit = new QLineEdit();
+    patronymicEdit->setPlaceholderText("Отчество");
+    connectNameLimiter(patronymicEdit, 15);
 
     phoneEdit = new QLineEdit();
     phoneEdit->setMaxLength(11);
@@ -76,13 +93,15 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 
     // Таблица
     table = new QTableWidget();
-    table->setColumnCount(2);
-    table->setHorizontalHeaderLabels({"Имя", "Телефон"});
+    table->setColumnCount(4);
+    table->setHorizontalHeaderLabels({"Фамилия", "Имя", "Отчество", "Телефон"});
     table->horizontalHeader()->setStretchLastSection(true);
 
     // Layout для ввода
     QHBoxLayout *inputLayout = new QHBoxLayout();
     inputLayout->addWidget(nameEdit);
+    inputLayout->addWidget(firstNameEdit);
+    inputLayout->addWidget(patronymicEdit);
     inputLayout->addWidget(phoneEdit);
     inputLayout->addWidget(addButton);
     inputLayout->addWidget(deleteButton);
@@ -103,7 +122,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent) {
 void MainWindow::loadData() {
     table->setRowCount(0);
 
-    QSqlQuery query("SELECT * FROM contacts");
+    QSqlQuery query("SELECT id, name, first_name, patronymic, phone FROM contacts");
 
     int row = 0;
     while (query.next()) {
@@ -114,6 +133,8 @@ void MainWindow::loadData() {
 
         table->setItem(row, 0, nameItem);
         table->setItem(row, 1, new QTableWidgetItem(query.value(2).toString()));
+        table->setItem(row, 2, new QTableWidgetItem(query.value(3).toString()));
+        table->setItem(row, 3, new QTableWidgetItem(query.value(4).toString()));
 
         row++;
     }
@@ -122,12 +143,24 @@ void MainWindow::loadData() {
 // Добавление
 void MainWindow::addContact() {
     QString name = nameEdit->text().trimmed();
+    QString firstName = firstNameEdit->text().trimmed();
+    QString patronymic = patronymicEdit->text().trimmed();
     QString phone = phoneEdit->text();
 
-    if (name.isEmpty() || phone.isEmpty()) return;
+    if (name.isEmpty() || firstName.isEmpty() || patronymic.isEmpty() || phone.isEmpty()) return;
 
-    if (normalizeNameInput(name) != name || countLetters(name) > 10 || countLetters(name) == 0) {
-        QMessageBox::warning(this, "Ошибка", "Имя должно состоять только из букв и содержать не более 10 букв");
+    if (!isValidNameInput(name, 10)) {
+        QMessageBox::warning(this, "Ошибка", "Фамилия должна состоять только из букв и содержать не более 10 букв");
+        return;
+    }
+
+    if (!isValidNameInput(firstName, 15)) {
+        QMessageBox::warning(this, "Ошибка", "Имя должно состоять только из букв и содержать не более 15 букв");
+        return;
+    }
+
+    if (!isValidNameInput(patronymic, 15)) {
+        QMessageBox::warning(this, "Ошибка", "Отчество должно состоять только из букв и содержать не более 15 букв");
         return;
     }
 
@@ -137,12 +170,17 @@ void MainWindow::addContact() {
     }
 
     QSqlQuery query;
-    query.prepare("INSERT INTO contacts (name, phone) VALUES (:name, :phone)");
+    query.prepare("INSERT INTO contacts (name, first_name, patronymic, phone) "
+                  "VALUES (:name, :first_name, :patronymic, :phone)");
     query.bindValue(":name", name);
+    query.bindValue(":first_name", firstName);
+    query.bindValue(":patronymic", patronymic);
     query.bindValue(":phone", phone);
     query.exec();
 
     nameEdit->clear();
+    firstNameEdit->clear();
+    patronymicEdit->clear();
     phoneEdit->clear();
 
     loadData();
