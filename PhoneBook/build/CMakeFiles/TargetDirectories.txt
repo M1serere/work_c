@@ -1,0 +1,5 @@
+C:/Users/croco/Desktop/nom2/PhoneBook/build/CMakeFiles/PhoneBook.dir
+C:/Users/croco/Desktop/nom2/PhoneBook/build/CMakeFiles/edit_cache.dir
+C:/Users/croco/Desktop/nom2/PhoneBook/build/CMakeFiles/rebuild_cache.dir
+C:/Users/croco/Desktop/nom2/PhoneBook/build/CMakeFiles/PhoneBook_autogen_timestamp_deps.dir
+C:/Users/croco/Desktop/nom2/PhoneBook/build/CMakeFiles/PhoneBook_autogen.dir

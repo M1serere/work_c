@@ -1,0 +1,10 @@
+# ninja log v7
+42	707	7999098434555398	PhoneBook_autogen/timestamp	53292334359ee558
+42	707	7999098434555398	PhoneBook_autogen/mocs_compilation.cpp	53292334359ee558
+42	707	7999098434555398	C:/Users/croco/Desktop/nom2/PhoneBook/build/PhoneBook_autogen/timestamp	53292334359ee558
+42	707	7999098434555398	C:/Users/croco/Desktop/nom2/PhoneBook/build/PhoneBook_autogen/mocs_compilation.cpp	53292334359ee558
+726	2045	7999098435312860	CMakeFiles/PhoneBook.dir/database.cpp.obj	ec72235e5d7a0791
+717	2468	7999098435164986	CMakeFiles/PhoneBook.dir/main.cpp.obj	6e1fd56ee0c4c08
+713	2512	7999098435033766	CMakeFiles/PhoneBook.dir/PhoneBook_autogen/mocs_compilation.cpp.obj	5a5c394cd2497f38
+722	2604	7999098435221493	CMakeFiles/PhoneBook.dir/mainwindow.cpp.obj	4300e33e928a123c
+2604	2776	7999098454034062	PhoneBook.exe	11333d19b25b2762
